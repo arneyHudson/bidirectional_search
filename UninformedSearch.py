@@ -81,4 +81,11 @@ def depth_first_search(problem: Problem) -> Any:
 
     return []  # no path found
 
+def bidirectional_search(problem: Problem) -> Any:
+    """
+    TODO
+    """
+
+    return []  # no path found
+
 
