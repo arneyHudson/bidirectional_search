@@ -90,8 +90,6 @@ def bidirectional_search(problem: Problem) -> Any:
 
     if problem.is_goal(initial_node.state):
         return get_path(initial_node)
-    if problem.is_goal(goal_node.state):
-        return get_path(goal_node)
 
     # Initialize the frontiers and reached sets for the forward and backward searches
     forward_frontier = [initial_node]
@@ -131,8 +129,6 @@ def bidirectional_search(problem: Problem) -> Any:
             if backward_state_key not in backward_reached:
                 backward_reached[backward_state_key] = backward_child
                 backward_frontier.append(backward_child)
-
-    return []  # no path found
 
     return []  # no path found
 

@@ -63,6 +63,8 @@ def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_ma
         path = breadth_first_search(p1)
     elif search_type == "d":
         path = depth_first_search(p1)
+    elif search_type == "s":
+        path = bidirectional_search(p1)
 
     memory_usage = tracemalloc.get_traced_memory()
     stats[0] = memory_usage[1]
@@ -89,6 +91,7 @@ if __name__ == '__main__':
     algorithm = input(f"Which algorithm do you want to run: "
                       f"\n(b)Breadth First Search "
                       f"\n(d)Depth First Search "
+                      f"\n(s)Bidirectional Search "
                       f"\n(c)Both\n")
     num_mazes = 11
     maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
@@ -114,6 +117,11 @@ if __name__ == '__main__':
                 print(f"BFS_{m}")
                 s, p = run_test(m, "b", print_stats, print_maze)
             stats.append([f"BFS_{m}"] + s + p)
+        if algorithm == "c" or algorithm == "s":
+            if print_stats:
+                print(f"BDS_{m}")
+                s, p = run_test(m, "s", print_stats, print_maze)
+            stats.append([f"BDS_{m}"] + s + p)
 
     header = ["Run", "Memory", "Time", "Path Length", "Path"]
 
