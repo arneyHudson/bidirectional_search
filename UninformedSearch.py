@@ -9,7 +9,7 @@ def get_path(node: Node) -> List[str]:
     """
     root = node
     p = []
-    while root is not None:
+    while root is not None and root.parent is not None:
         p.append(root.action)
         root = root.parent
     p.reverse()
