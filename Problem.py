@@ -10,20 +10,10 @@ T = TypeVar('T')
 
 class Node(Generic[T]):
     count = 0
-    """
-    Represents a state found while search through a state space. 
-    Also holds the action, path_cost, and search depth
-    for this action.
-    """
-    def __init__(self, state:T, parent: Node = None, action: str = None, path_cost: float = 0, depth: int = 0):
-        """
-        Initilizes a Node.
-        :param state:  state representation of a problem
-        :param parent: parent node. Used to backtrack and find the path to this Node.
-        :param action: action to get to the state in this node
-        :param path_cost: cumulative cost to get to the state in this node
-        :param depth: depth of this state within a search tree
-        """
+
+    def __init__(self, state: T, parent: Node = None, action: str = None, path_cost: float = 0, depth: int = 0):
+        """ This constructor stores the references when the Node is
+        initialized. """
         self._state = state
         self._parent = parent
         self._action = action
@@ -34,7 +24,7 @@ class Node(Generic[T]):
 
     @property
     def state(self) -> T:
-        """state within a search space"""
+        """state this node represents"""
         return self._state
 
     @property
@@ -44,17 +34,17 @@ class Node(Generic[T]):
 
     @property
     def action(self) -> str:
-        """returns action it took to get to the state in this node"""
+        """returns action it took to get to this node"""
         return self._action
 
     @property
     def path_cost(self) -> float:
-        """returns the cumulative cost to get to the state in this node"""
+        """returns the cost to get to this node"""
         return self._path_cost
 
     @property
     def depth(self) -> int:
-        """returns the depth of the state in this node with a search"""
+        """returns the depth of this node"""
         return self._depth
 
     def __str__(self) -> str:
@@ -78,7 +68,7 @@ class Node(Generic[T]):
 
 
 class Problem(ABC, Generic[T]):
-    def __init__(self, initial_state: Generic[T], goal_state: Generic[T]):
+    def __init__(self, initial_state: T, goal_state: T):
         """
         Create a generic problem that can be solved with an Uninformed Search algorithm
         :param initial_state: initial state which can be any type T
@@ -158,15 +148,24 @@ class Problem(ABC, Generic[T]):
         """
         pass
 
+    @abstractmethod
+    def estimated_cost(self, current: T):
+        """
+        Returns an estimate of the cost from the current state to the goal
+        :param current: current state
+        :return: cost from current state to the goal
+        """
+        pass
 
-class PathFinding(Problem[np.ndarray]):
+
+class MazeNavigation(Problem[np.ndarray]):
     """
     Maze Navigation Search problem. This class contains functions
     needed to do uninformed search. Specifically, the functions below
     are built to manipulate a numpy 2D array which is the state
     representation.
     """
-    def __init__(self, initial_state: Generic[T], goal_state: Generic[T]):
+    def __init__(self, initial_state: T, goal_state: T):
         """
         Initializes a MazeNavigation type search problem. The
         state objects are 2D numpy arrays
@@ -221,16 +220,16 @@ class PathFinding(Problem[np.ndarray]):
         # checks to see if there is a walkable space
         # in the four cardinal direction
         # North
-        if row - 1 >= 0 and state[row - 1][col] == self._walkable:
+        if row - 1 >= 0 and state[row - 1][col] != self._impassable:
             ret.append("north")
         # East
-        if col + 1 < width and state[row][col + 1] == self._walkable:
+        if col + 1 < width and state[row][col + 1] != self._impassable:
             ret.append("east")
         # South
-        if row + 1 < height and state[row + 1][col] == self._walkable:
+        if row + 1 < height and state[row + 1][col] != self._impassable:
             ret.append("south")
         # West
-        if col - 1 >= 0 and state[row][col - 1] == self._walkable:
+        if col - 1 >= 0 and state[row][col - 1] != self._impassable:
             ret.append("west")
 
         return ret
@@ -280,7 +279,9 @@ class PathFinding(Problem[np.ndarray]):
         # right now the cost for all the walkable tiles is just 1
         # can be modified to add cost for different types of tiles
         # to simulate difficult terrain
-        if curr_state[next_row][next_col] == self._walkable:
+        if curr_state[next_row][next_col] == -1:
+            return 1
+        elif curr_state[next_row][next_col] == self._walkable:
             return 1
 
     def hashable_state(self, state: T) -> Any:
@@ -296,4 +297,23 @@ class PathFinding(Problem[np.ndarray]):
         # use the value returns by tobytes as a unique representation
         # of the array
         return state.tobytes()
+
+    def estimated_cost(self, current: T):
+        """
+        Returns an estimate of the cost from the current state to the goal
+        :param current: current state
+        :return: cost from current state to the goal
+        """
+
+        # row and col of current location
+        curr_row = np.where(current == self._character)[0][0]
+        curr_col = np.where(current == self._character)[1][0]
+
+        # row and col of goal location
+        goal_row = np.where(self.goal == self._character)[0][0]
+        goal_col = np.where(self.goal == self._character)[1][0]
+
+
+        # returns manhathan distance between current and goal
+        return abs(curr_row-goal_row) + abs(curr_col - goal_col)
 

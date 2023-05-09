@@ -82,9 +82,6 @@ def depth_first_search(problem: Problem) -> Any:
     return []  # no path found
 
 def bidirectional_search(problem: Problem) -> Any:
-    """
-    TODO
-    """
     initial_node = Node(problem.initial)
     goal_node = Node(problem.goal)
 

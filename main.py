@@ -2,15 +2,18 @@ import csv
 import tracemalloc
 import time
 
+from InformedSearch import *
 from UninformedSearch import *
 from mazes import *
 
 
+
+
 def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_maze: bool = False):
     if maze_type == 1:
-        initial_state, goal_state = test_maze1()
+        initial_state, goal_state = basic_maze()
     elif maze_type == 2:
-        initial_state, goal_state = test_maze2()
+        initial_state, goal_state = goaless_maze()
     elif maze_type == 3:
         # start in the center and goal is north at end of spoke
         initial_state, goal_state = cross_maze(101, [50, 50], [0, 50])
@@ -50,11 +53,12 @@ def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_ma
         print(f"Goal state: ")
         print(goal_state)
 
-    p1 = PathFinding(initial_state, goal_state)
+    p1 = MazeNavigation(initial_state, goal_state)
 
     # memory, time, path length
     stats = [0 for i in range(3)]
     path = []
+    n = None
 
     start = time.time()
     tracemalloc.start()
@@ -63,6 +67,10 @@ def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_ma
         path = breadth_first_search(p1)
     elif search_type == "d":
         path = depth_first_search(p1)
+    elif search_type == "a":
+        path = a_star(p1)
+    elif search_type == "g":
+        path = greedy(p1)
     elif search_type == "s":
         path = bidirectional_search(p1)
 
@@ -86,13 +94,14 @@ def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_ma
 if __name__ == '__main__':
     print_maze = False
     print_stats = True
-    filename = "searchResults.csv"
+    filename = "searchResultsExample.csv"
 
     algorithm = input(f"Which algorithm do you want to run: "
                       f"\n(b)Breadth First Search "
                       f"\n(d)Depth First Search "
-                      f"\n(s)Bidirectional Search "
-                      f"\n(c)Both\n")
+                      f"\n(a)A* Search "
+                      f"\n(g)Greedy Search "
+                      f"\n(c)All\n")
     num_mazes = 11
     maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
 
@@ -105,6 +114,7 @@ if __name__ == '__main__':
         mazes = []
 
     stats = []
+    rows = []
     for m in mazes:
         print(f"\nMaze num: {m}")
         if algorithm == "c" or algorithm == "d":
@@ -117,11 +127,22 @@ if __name__ == '__main__':
                 print(f"BFS_{m}")
                 s, p = run_test(m, "b", print_stats, print_maze)
             stats.append([f"BFS_{m}"] + s + p)
+        if algorithm == "c" or algorithm == "a":
+            if print_stats:
+                print(f"A*_{m}")
+                s, p = run_test(m, "a", print_stats, print_maze)
+            stats.append([f"A*_{m}"] + s + p)
+        if algorithm == "c" or algorithm == "g":
+            if print_stats:
+                print(f"Greedy_{m}")
+                s, p = run_test(m, "g", print_stats, print_maze)
+            stats.append([f"Greedy_{m}"] + s + p)
         if algorithm == "c" or algorithm == "s":
             if print_stats:
-                print(f"BDS_{m}")
-                s, p = run_test(m, "s", print_stats, print_maze)
-            stats.append([f"BDS_{m}"] + s + p)
+                print(f"Bidirectional_{m}")
+                s, p = run_test(m, "g", print_stats, print_maze)
+            stats.append([f"Bidirectional_{m}"] + s + p)
+
 
     header = ["Run", "Memory", "Time", "Path Length", "Path"]
 

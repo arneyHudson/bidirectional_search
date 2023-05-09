@@ -1,7 +1,8 @@
 import numpy as np
 from shapes import *
 
-def test_maze1():
+
+def basic_maze():
     """
     basic maze used as an initial test for the search algorithms
     :return: initial and goal states as a tupple. 0s are impassable,
@@ -12,7 +13,7 @@ def test_maze1():
     return [initial_state, goal_state]
 
 
-def test_maze2():
+def goaless_maze():
     """
     maze with an unreachable state
     :return: initial and goal states as a tupple. 0s are impassable,
@@ -45,7 +46,7 @@ def cross_maze(size, start_loc, end_loc):
 
 def border_maze(size, start_loc, end_loc):
     """
-    Maze that is just a ring around the border of the pmaze.
+    Maze that is just a ring around the border of the maze.
     :return: initial and goal states as a tuple. 0s are impassable,
     1s are walkable, and 2s represent location of the agent
     """
@@ -66,7 +67,8 @@ def border_maze(size, start_loc, end_loc):
 
 
 def informed_maze():
-    """Maze to test Greedy and A* in week 3. Contains a deceptive goal location that will cause
+    """
+    Maze to test Greedy and A* in week 3. Contains a deceptive goal location that will cause
     Greedy to return the non-optimal solution
     :return: initial and goal states as a tuple. 0s are impassable,
     1s are walkable, and 2s represent location of the agent
@@ -80,43 +82,20 @@ def informed_maze():
     goal_state[0,4] = 2
     return [initial_state, goal_state]
 
-'''
 
-def test_maze7():
+def open_maze(size, start_loc, end_loc):
     """
-    Open Maze Worst Case
-    Maze with one path to the goal, but the goal is along the last direction searched by DFS
+    Maze that is just a bunch of open space.
     :return: initial and goal states as a tuple. 0s are impassable,
     1s are walkable, and 2s represent location of the agent
     """
-    s = 101
-    initial_state = np.ones((s, s))
-    goal_state = np.ones((s, s))
+    initial_state = np.ones((size, size))
+    goal_state = np.copy(initial_state)
 
-    # start at the center of the maze
-    initial_state[int(s / 2)][int(s / 2)] = 2
-    # end top middle of the maze
-    goal_state[0][int(s / 2)] = 2
+    initial_state[start_loc[0]][start_loc[1]] = 2
+    goal_state[end_loc[0]][end_loc[1]] = 2
+
     return [initial_state, goal_state]
-
-
-def test_maze8():
-    """
-    Open Maze Best Case
-    Maze with one path to the goal, but the goal is along the first direction searched by DFS
-    :return: initial and goal states as a tuple. 0s are impassable,
-    1s are walkable, and 2s represent location of the agent
-    """
-    s = 101
-    initial_state = np.ones((s, s))
-    goal_state = np.ones((s, s))
-
-    # start at the center of the maze
-    initial_state[int(s / 2)][int(s / 2)] = 2
-    # end left center of the maze
-    goal_state[int(s / 2)][0] = 2
-    return [initial_state, goal_state]
-'''
 
 
 def draw_maze(initial_state: np.ndarray, goal_state: np.ndarray):
@@ -139,6 +118,8 @@ def draw_maze(initial_state: np.ndarray, goal_state: np.ndarray):
                 r.set_color("red")
             elif initial_state[i][j] == 0: # impassable
                 r.set_color("black")
+            elif initial_state[i][j] == -1: # higher path cost
+                r.set_color("gray")
             else:
                 r.set_color("white")
             r.draw()
@@ -146,12 +127,12 @@ def draw_maze(initial_state: np.ndarray, goal_state: np.ndarray):
 
 
 if __name__ == '__main__':
-    maze_type = 10
+    maze_type = 11
 
     if maze_type == 1:
-        initial_state, goal_state = test_maze1()
+        initial_state, goal_state = basic_maze()
     elif maze_type == 2:
-        initial_state, goal_state = test_maze2()
+        initial_state, goal_state = goaless_maze()
     elif maze_type == 3:
         # start in the center and goal is north at end of spoke
         initial_state, goal_state = cross_maze(101, [50, 50], [0, 50])
