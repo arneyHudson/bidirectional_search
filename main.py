@@ -101,6 +101,7 @@ if __name__ == '__main__':
                       f"\n(d)Depth First Search "
                       f"\n(a)A* Search "
                       f"\n(g)Greedy Search "
+                      f"\n(s)Bidirectional Search"
                       f"\n(c)All\n")
     num_mazes = 11
     maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
@@ -140,7 +141,7 @@ if __name__ == '__main__':
         if algorithm == "c" or algorithm == "s":
             if print_stats:
                 print(f"Bidirectional_{m}")
-                s, p = run_test(m, "g", print_stats, print_maze)
+                s, p = run_test(m, "s", print_stats, print_maze)
             stats.append([f"Bidirectional_{m}"] + s + p)
 
 
