@@ -385,9 +385,9 @@ class SlidingPuzzle(Problem[np.array]):
 
     def estimated_cost(self, current: T):
         distance = 0
-        height, width = current.shape()
-        for y in range(height):
-            for x in range(width):
+        size = current.shape[1]
+        for y in range(size):
+            for x in range(size):
                 value = current[x][y]
                 curr_row = np.where(current == value)[0][0]
                 curr_col = np.where(current == value)[1][0]
