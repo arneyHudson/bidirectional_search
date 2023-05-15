@@ -91,6 +91,65 @@ def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_ma
     return stats, path
 
 
+def run_puzzle(algorithm):
+    print_stats = True
+    print_maze = True
+    SIZE = 5
+    random = False
+    goal_state = np.arange(1, SIZE * SIZE + 1).reshape((SIZE, SIZE))
+    goal_state[SIZE][SIZE] = 0
+    if random:
+        flattened = goal_state.flatten()
+        np.random.shuffle(flattened)
+        initial_state = flattened.reshape(goal_state.shape)
+    else:
+        initial_state = np.arange(SIZE*SIZE, 0, -1).reshape((SIZE, SIZE))
+        initial_state[0][0] = 0
+
+
+    if print_maze:
+        print(f"Initial state: ")
+        print(initial_state)
+        print(f"Goal state: ")
+        print(goal_state)
+    problem = SlidingPuzzle(initial_state, goal_state)
+
+    stats = [0 for i in range(3)]
+    path = []
+    n = None
+
+    start = time.time()
+    tracemalloc.start()
+
+    if algorithm == "b":
+        path = breadth_first_search(problem)
+    elif algorithm == "d":
+        path = depth_first_search(problem)
+    elif algorithm == "a":
+        path = a_star(problem)
+    elif algorithm == "g":
+        path = greedy(problem)
+    elif algorithm == "s":
+        path = bidirectional_search(problem)
+
+    memory_usage = tracemalloc.get_traced_memory()
+    stats[0] = memory_usage[1]
+    tracemalloc.stop()
+    end = time.time()
+    stats[1] = (end - start)
+    stats[2] = len(path)
+
+    if print_stats:
+        print(f"Memory usage: {stats[0]:.2e}")
+        print(f"Elasped time {stats[1]:.4f}")
+        print(f"Path length: {stats[2]}")
+        print(f"Path: {path}")
+
+    return stats, path
+
+
+
+
 if __name__ == '__main__':
     print_maze = False
     print_stats = True
@@ -104,8 +163,13 @@ if __name__ == '__main__':
                       f"\n(s)Bidirectional Search"
                       f"\n(c)All\n")
     num_mazes = 11
-    maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
+    problem_type = input(f"Enter m for maze or s for sliding puzzle.")
 
+    if problem_type == "s":
+        run_puzzle(algorithm)
+
+    if problem_type == 'm':
+        maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
     if maze_num == "-1":
         mazes = [i + 1 for i in range(num_mazes)]
     elif 1 <= int(maze_num) <= num_mazes:

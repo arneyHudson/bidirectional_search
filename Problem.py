@@ -165,6 +165,7 @@ class MazeNavigation(Problem[np.ndarray]):
     are built to manipulate a numpy 2D array which is the state
     representation.
     """
+
     def __init__(self, initial_state: T, goal_state: T):
         """
         Initializes a MazeNavigation type search problem. The
@@ -313,7 +314,88 @@ class MazeNavigation(Problem[np.ndarray]):
         goal_row = np.where(self.goal == self._character)[0][0]
         goal_col = np.where(self.goal == self._character)[1][0]
 
-
         # returns manhathan distance between current and goal
-        return abs(curr_row-goal_row) + abs(curr_col - goal_col)
+        return abs(curr_row - goal_row) + abs(curr_col - goal_col)
 
+
+class SlidingPuzzle(Problem[np.array]):
+    def __int__(self, initial_state: T, goal_state: T):
+        super().__init__(initial_state, goal_state)
+
+        self._open_square = 0
+
+    def is_goal(self, current: T) -> bool:
+        return np.array_equal(current, self.goal)
+
+    def expand(self, node: Node) -> List[Node]:
+        current_state = node.state
+        ret = []
+        for action in self._actions(current_state):
+            next_state = self._result(current_state, action)
+            cost = self._action_cost(current_state, action, next_state)
+            ret.append(Node(next_state, node, action, node.path_cost + cost, node.depth + 1))
+        return ret
+
+    def _actions(self, state: T) -> List[str]:
+        ret = []
+        state: T
+        height, width = state.shape
+
+        row = np.where(state == self._open_square)[0][0]
+        col = np.where(state == self._open_square)[1][0]
+
+        if row - 1 >= 0:
+            ret.append("north")
+        if col + 1 < width:
+            ret.append("east")
+        if row + 1 < height:
+            ret.append("south")
+        if col - 1 >= 0:
+            ret.append("west")
+
+        return ret
+
+    def _result(self, current_state: T, action: str) -> T:
+        ret = np.copy(current_state)
+
+        row = np.where(current_state == self._open_square)[0][0]
+        col = np.where(current_state == self._open_square)[1][0]
+
+        if action == "north":
+            ret[row][col] = ret[row - 1][col]
+            ret[row - 1][col] = self._open_square
+
+        elif action == "east":
+            ret[row][col] = ret[row][col + 1]
+            ret[row][col + 1] = self._open_square
+
+        elif action == "south":
+            ret[row][col] = ret[row + 1][col]
+            ret[row + 1][col] = self._open_square
+
+        elif action == "west":
+            ret[row][col] = ret[row][col - 1]
+            ret[row][col - 1] = self._open_square
+
+        return ret
+
+    def _action_cost(self, current: T, action: str, next: T) -> float:
+        # TODO I don't know
+        return 1
+
+    def hashable_state(self, state: T) -> Any:
+        return state.tobytes()
+
+    def estimated_cost(self, current: T):
+        distance = 0
+        height, width = current.shape()
+        for y in range(height):
+            for x in range(width):
+                value = current[x][y]
+                curr_row = np.where(current == value)[0][0]
+                curr_col = np.where(current == value)[1][0]
+
+                goal_row = np.where(self.goal == value)[0][0]
+                goal_col = np.where(self.goal == value)[1][0]
+                distance += abs(curr_row - goal_row) + abs(curr_col - goal_col)
+        return distance
