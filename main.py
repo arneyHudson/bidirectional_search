@@ -97,7 +97,8 @@ def run_puzzle(algorithm):
     SIZE = 5
     random = False
     goal_state = np.arange(1, SIZE * SIZE + 1).reshape((SIZE, SIZE))
-    goal_state[SIZE][SIZE] = 0
+    goal_state[SIZE-1][SIZE-1] = 0
+
     if random:
         flattened = goal_state.flatten()
         np.random.shuffle(flattened)
@@ -105,6 +106,9 @@ def run_puzzle(algorithm):
     else:
         initial_state = np.arange(SIZE*SIZE, 0, -1).reshape((SIZE, SIZE))
         initial_state[0][0] = 0
+        #initial_state = goal_state.copy()
+        #initial_state[SIZE-1][SIZE-1] = 24
+        #initial_state[SIZE-1][SIZE-2] = 0
 
 
     if print_maze:
@@ -170,13 +174,13 @@ if __name__ == '__main__':
 
     if problem_type == 'm':
         maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
-    if maze_num == "-1":
-        mazes = [i + 1 for i in range(num_mazes)]
-    elif 1 <= int(maze_num) <= num_mazes:
-        mazes = [int(maze_num)]
-    else:
-        print("Invalid maze number")
-        mazes = []
+        if maze_num == "-1":
+            mazes = [i + 1 for i in range(num_mazes)]
+        elif 1 <= int(maze_num) <= num_mazes:
+            mazes = [int(maze_num)]
+        else:
+            print("Invalid maze number")
+            mazes = []
 
     stats = []
     rows = []

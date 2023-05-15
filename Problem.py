@@ -322,8 +322,6 @@ class SlidingPuzzle(Problem[np.array]):
     def __int__(self, initial_state: T, goal_state: T):
         super().__init__(initial_state, goal_state)
 
-        self._open_square = 0
-
     def is_goal(self, current: T) -> bool:
         return np.array_equal(current, self.goal)
 
@@ -340,9 +338,8 @@ class SlidingPuzzle(Problem[np.array]):
         ret = []
         state: T
         height, width = state.shape
-
-        row = np.where(state == self._open_square)[0][0]
-        col = np.where(state == self._open_square)[1][0]
+        row = np.where(state == 0)[0][0]
+        col = np.where(state == 0)[1][0]
 
         if row - 1 >= 0:
             ret.append("north")
@@ -358,24 +355,24 @@ class SlidingPuzzle(Problem[np.array]):
     def _result(self, current_state: T, action: str) -> T:
         ret = np.copy(current_state)
 
-        row = np.where(current_state == self._open_square)[0][0]
-        col = np.where(current_state == self._open_square)[1][0]
+        row = np.where(current_state == 0)[0][0]
+        col = np.where(current_state == 0)[1][0]
 
         if action == "north":
             ret[row][col] = ret[row - 1][col]
-            ret[row - 1][col] = self._open_square
+            ret[row - 1][col] = 0
 
         elif action == "east":
             ret[row][col] = ret[row][col + 1]
-            ret[row][col + 1] = self._open_square
+            ret[row][col + 1] = 0
 
         elif action == "south":
             ret[row][col] = ret[row + 1][col]
-            ret[row + 1][col] = self._open_square
+            ret[row + 1][col] = 0
 
         elif action == "west":
             ret[row][col] = ret[row][col - 1]
-            ret[row][col - 1] = self._open_square
+            ret[row][col - 1] = 0
 
         return ret
 
