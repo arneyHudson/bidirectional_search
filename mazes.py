@@ -73,13 +73,13 @@ def informed_maze():
     :return: initial and goal states as a tuple. 0s are impassable,
     1s are walkable, and 2s represent location of the agent
     """
-    initial_state = np.ones((5, 5))
+    initial_state = np.ones((100, 100))
     initial_state[1,1:] = 0
-    initial_state[3,1:4] = 0
+    initial_state[98,1:99] = 0
     goal_state = np.copy(initial_state)
 
-    initial_state[4,2] = 2
-    goal_state[0,4] = 2
+    initial_state[99,49] = 2
+    goal_state[0,99] = 2
     return [initial_state, goal_state]
 
 
@@ -127,7 +127,7 @@ def draw_maze(initial_state: np.ndarray, goal_state: np.ndarray):
 
 
 if __name__ == '__main__':
-    maze_type = 11
+    maze_type = 10
 
     if maze_type == 1:
         initial_state, goal_state = basic_maze()

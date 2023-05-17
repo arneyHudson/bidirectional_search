@@ -94,7 +94,7 @@ def run_test(maze_type:int, search_type: str, print_stats: bool = True, print_ma
 def run_puzzle(algorithm):
     print_stats = True
     print_maze = True
-    SIZE = 5
+    SIZE = 3
     random = False
     goal_state = np.arange(1, SIZE * SIZE + 1).reshape((SIZE, SIZE))
     goal_state[SIZE-1][SIZE-1] = 0
@@ -169,8 +169,9 @@ if __name__ == '__main__':
     num_mazes = 11
     problem_type = input(f"Enter m for maze or s for sliding puzzle.")
 
-    if problem_type == "s":
-        run_puzzle(algorithm)
+    stats = []
+    rows = []
+    mazes = []
 
     if problem_type == 'm':
         maze_num = input(f"Enter a number from 1 to {num_mazes} to indicate which maze you want to run or -1 for all: ")
@@ -180,10 +181,10 @@ if __name__ == '__main__':
             mazes = [int(maze_num)]
         else:
             print("Invalid maze number")
-            mazes = []
 
-    stats = []
-    rows = []
+    if problem_type == "s":
+        run_puzzle(algorithm)
+
     for m in mazes:
         print(f"\nMaze num: {m}")
         if algorithm == "c" or algorithm == "d":
