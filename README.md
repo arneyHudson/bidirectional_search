@@ -7,3 +7,5 @@
 - You can change the size of the sliding puzzle by changing the variable SIZE in the run_puzzle() method in the main 
 - For example, making SIZE = 3 will make a 3x3 sliding puzzle. 
 - The hardest possible state to fix the sliding puzzle is used when trying to solve the game
+- ***The puzzle sliding game can only be run with one algorithm at a time, if you try to run it with
+multiple algorithms it will not work correctly***
